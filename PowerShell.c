@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
@@ -30,6 +31,74 @@ bool cat_execute(const char *arq) {
     }
     fclose(file);
     printf("\n");
+    return true;
+}
+
+bool command_execute(const char *linha) {
+    char command_name[20], command_parameters[256];
+    int command_code = 0;
+    int items_parsed = sscanf(linha, "%15s %255s", command_name, command_parameters);
+
+    if (items_parsed < 1) {
+        return false;
+    }
+
+    for (int i = 0; command_name[i]; i++) {
+        command_name[i] = toupper(command_name[i]);
+    }
+
+    if (strcmp(command_name, "MKDIR") == 0) {
+        command_code = 1;
+    } else if (strcmp(command_name, "CD") == 0) {
+        command_code = 2;
+    } else if (strcmp(command_name, "PWD") == 0) {
+        command_code = 3;
+    } else if (strcmp(command_name, "TOUCH") == 0) {
+        command_code = 4;
+    } else if (strcmp(command_name, "CAT") == 0) {
+        command_code = 5;
+    } else if (strcmp(command_name, "DIR") == 0) { // DIR > LS
+        command_code = 6;
+    } else if (strcmp(command_name, "RM") == 0) {
+        command_code = 7;
+    } else if (strcmp(command_name, "STAT") == 0) {
+        command_code = 8;
+    } else {
+        printf("unrecognized command_name: %s\n", command_name);
+        return false;
+    }
+
+    switch (command_code) {
+        case 1: // MKDIR
+            break;
+
+        case 2: // CD
+            break;
+
+        case 3: // PWD
+            pwd_execute();
+            break;
+
+        case 4: // TOUCH
+            break;
+
+        case 5: // CAT
+            if (items_parsed < 2) {
+            printf("Error: missing file name.\n Correct use of the command: CAT <file_name>\n");                    return false;
+            } else {
+                cat_execute(command_parameters);
+            }
+            break;
+
+        case 6: // DIR
+            break;
+
+        case 7: // RM
+            break;
+
+        case 8: // STAT
+            break;
+    }
     return true;
 }
 
