@@ -16,3 +16,20 @@ bool pwd_execute() {
     }
 }
 
+// FUNCTION CAT
+bool cat_execute(const char *arq) {
+    int currentChar;
+    FILE *file = fopen(arq, "r");
+        if (file == NULL) {
+            printf("ERROR: AT OPENING FILE\n");
+            return false;
+        }
+
+    while ((currentChar = fgetc(file)) != EOF) {
+        putchar(currentChar);
+    }
+    fclose(file);
+    printf("\n");
+    return true;
+}
+
