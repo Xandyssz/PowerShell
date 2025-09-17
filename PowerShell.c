@@ -25,6 +25,16 @@ typedef struct {
     int inode_number;           // É o índice do inode correspondente na tabela de inodes (inodes.dat).
 } DirectoryEntry;
 
+// Prepara a estrutura de pastas inicial do sistema de arquivos.
+void create_base_structure() {
+    mkdir("fs");      // - Cria o diretório raiz 'fs'.
+    mkdir("fs/blocks"); // - Cria o diretório para os blocos de dados.
+
+    FILE *mickey_file = fopen("fs/.mickey.txt", "w"); // -- Cria o arquivo de verificação .mickey.txt com a assinatura "Disney".
+    fprintf(mickey_file, "Disney");
+    fclose(mickey_file);
+}
+
 // FUNCTION PWD
 // _getcwd: retorna o caminho absoluto do diretório atual
 bool pwd_execute() {
