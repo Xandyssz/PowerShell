@@ -43,7 +43,11 @@ void fs_write_superblock(FileSystemConfig* config) {
     config->max_filename = 14;
 
     FILE *sb_file = fopen("fs/superblock.dat", "w");
-
+    if (!sb_file) {
+        perror("FATAL: Nao foi possivel criar superblock.dat");
+        exit(1);
+    }
+    
     // Escreve os dados da configuração no arquivo.
     fprintf(sb_file, "filesystem=kleberfs\n");
     fprintf(sb_file, "blocksize=%d\n", config->block_size);
