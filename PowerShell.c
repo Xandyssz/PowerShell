@@ -119,6 +119,37 @@ void fs_init_inodes(const FileSystemConfig* config) {
     fclose(inodes_file);
 }
 
+void fs_init_freespace(const FileSystemConfig* config) {
+    // Cria/abre o arquivo para escrita binária
+    FILE *freespace_file = fopen("fs/freespace.dat", "wb");
+    if (!freespace_file) {
+        perror("FATAL: Nao foi possivel criar/abrir fs/freespace.dat");
+        exit(1);
+    }
+
+    // Aloca memória para os blocos livres (todos inicializados com 0)
+    char *free_blocks = (char*) calloc(config->num_blocks, sizeof(char));
+    if (!free_blocks) {
+        perror("FATAL: Falha ao alocar memoria para free_blocks");
+        fclose(freespace_file);
+        exit(1);
+    }
+
+    // Escreve todos os blocos de uma vez no arquivo
+    fwrite(free_blocks, sizeof(char), config->num_blocks, freespace_file);
+
+    // Libera memória e fecha o arquivo
+    free(free_blocks);
+    fclose(freespace_file);
+
+    // Mensagem de confirmação
+    printf("Freespace inicializado: %d blocos livres\n", config->num_blocks);
+}
+
+// FUNCTION [fs_init_dataBlocks]
+// FUNCTION [fs_init_rootDirectory]
+// FUNCTION [initialize_fs]
+
 // FUNCTION PWD
 // _getcwd: retorna o caminho absoluto do diretório atual
 bool pwd_execute() {
