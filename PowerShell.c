@@ -31,6 +31,10 @@ void create_base_structure() {
     mkdir("fs/blocks"); // - Cria o diretório para os blocos de dados.
 
     FILE *mickey_file = fopen("fs/.mickey.txt", "w"); // -- Cria o arquivo de verificação .mickey.txt com a assinatura "Disney".
+    if (!mickey_file) {
+        perror("FATAL: Nao foi possivel abrir o arquivo");
+        exit(1);
+    }
     fprintf(mickey_file, "Disney");
     fclose(mickey_file);
 }
