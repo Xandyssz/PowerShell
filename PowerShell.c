@@ -52,6 +52,41 @@ void fs_write_superblock(FileSystemConfig* config) {
     fclose(sb_file);
 }
 
+bool initialize_config (FileSystemConfig* config) {
+    char line[100];
+    bool flag_BlockSizeFound = false;
+    bool flagPartitionSizeFound = false;
+    FILE *file_superblock = fopen("fs/superblock.dat", "r");
+
+    if (file_superblock == NULL) {
+        perror("FATAL: Nao foi possivel abrir o superblock.dat");
+        exit(1);
+    }
+
+    while(fgets(line, sizeof(line), file_superblock)) {
+        if (sscanf(line, "blocksize=%d", &config->block_size) == 1) {
+            flag_BlockSizeFound = true;
+        }
+        else if (sscanf(line, "partitionsize=%d", &config->partition_size) == 1) {
+            flagPartitionSizeFound = true;
+        }
+    }
+    fclose(file_superblock);
+
+    if (!flag_BlockSizeFound || !flagPartitionSizeFound) {
+        printf("FATAL: O arquivo 'superblock.dat' esta mal formatado ou incompleto. 'blocksize' ou 'partitionsize' nao encontrado.\n");
+        exit(1);
+    }
+
+    config->num_blocks = config->partition_size / config->block_size;
+    config->num_inodes = 32;
+    config->max_filename = 14;
+
+    printf("Configuracao carregada: block_size=%d, num_blocks=%d\n",
+        config->block_size, config->num_blocks);
+    return true;
+}
+
 // FUNCTION PWD
 // _getcwd: retorna o caminho absoluto do diretório atual
 bool pwd_execute() {
