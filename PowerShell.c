@@ -47,7 +47,7 @@ void fs_write_superblock(FileSystemConfig* config) {
         perror("FATAL: Nao foi possivel criar superblock.dat");
         exit(1);
     }
-    
+
     // Escreve os dados da configuração no arquivo.
     fprintf(sb_file, "filesystem=kleberfs\n");
     fprintf(sb_file, "blocksize=%d\n", config->block_size);
@@ -89,6 +89,30 @@ bool initialize_config (FileSystemConfig* config) {
     printf("Configuracao carregada: block_size=%d, num_blocks=%d\n",
         config->block_size, config->num_blocks);
     return true;
+}
+
+void fs_init_inodes(const FileSystemConfig* config) {
+    // Abre o arquivo para escrita binária.
+    FILE *inodes_file = fopen("fs/inodes.dat", "wb");
+    if (inodes_file == NULL) {
+        perror("FATAL: Nao foi possivel criar/abrir fs/inodes.dat");
+        exit(1);
+    }
+
+    // Aloca memória para todos os inodes E já preenche tudo com zeros.
+    Inode *inodes_buffer = (Inode*) calloc(config->num_inodes, sizeof(Inode));
+
+    // Verifica se a alocação de memória funcionou.
+    if (inodes_buffer == NULL) {
+        perror("FATAL: Falha ao alocar memoria para o buffer de inodes");
+        fclose(inodes_file); // Fecha o arquivo antes de sair para evitar memory leak.
+        exit(1);
+    }
+    // Faz uma única e eficiente operação de escrita no disco, libera a memoria e fecha o arquivo.
+    fwrite(inodes_buffer, sizeof(Inode), config->num_inodes, inodes_file);
+    printf("Inodes inicializados: %d\n", config->num_inodes);
+    free(inodes_buffer);
+    fclose(inodes_file);
 }
 
 // FUNCTION PWD
