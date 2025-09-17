@@ -2,7 +2,28 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
-#include <direct.h> // LIBRARY FOR PWD.
+#include <stdlib.h>
+#include <sys/stat.h>
+
+// --- ESTRUTURAS DO SISTEMA DE ARQUIVOS ---
+typedef struct {
+    int block_size;             // Tamanho de cada bloco de dados.
+    int partition_size;         // Tamanho total da partição.
+    int num_blocks;             // Total de blocos - [partition_size / block_size].
+    int num_inodes;             // Número máximo de arquivos/diretórios que o sistema suporta.
+    int max_filename;           // Comprimento máximo para nomes de arquivos.
+} FileSystemConfig;
+
+typedef struct {
+    char type;                  // Tipo da entrada ('f': arquivo, 'd': diretório).
+    int size;                   // Tamanho do arquivo.
+    int direct_blocks[10];      // Limita o tamanho máximo do arquivo em - [10 * block_size].
+} Inode;
+
+typedef struct {
+    char name[15];              // Reservado 15 para ter espaço para o [\0]
+    int inode_number;           // É o índice do inode correspondente na tabela de inodes (inodes.dat).
+} DirectoryEntry;
 
 // FUNCTION PWD
 // _getcwd: retorna o caminho absoluto do diretório atual
