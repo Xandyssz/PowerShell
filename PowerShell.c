@@ -35,6 +35,23 @@ void create_base_structure() {
     fclose(mickey_file);
 }
 
+void fs_write_superblock(FileSystemConfig* config) {
+    // Define os valores na struct antes de salvar
+    config->block_size = 128;
+    config->partition_size = 10240;
+    config->num_inodes = 32;
+    config->max_filename = 14;
+
+    FILE *sb_file = fopen("fs/superblock.dat", "w");
+
+    // Escreve os dados da configuração no arquivo.
+    fprintf(sb_file, "filesystem=kleberfs\n");
+    fprintf(sb_file, "blocksize=%d\n", config->block_size);
+    fprintf(sb_file, "partitionsize=%d\n", config->partition_size);
+
+    fclose(sb_file);
+}
+
 // FUNCTION PWD
 // _getcwd: retorna o caminho absoluto do diretório atual
 bool pwd_execute() {
